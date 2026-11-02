@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Nazoratchi baholari (GET /v1/approvals javobi, 1.1)",
+  "description": "Texnik nazoratchilar kunlik hisobotlarga markazda qo'ygan baholari. Faqat so'rov yuborgan kalit tashkilotining obyektlari. Kursor — approval_id (o'sib boradi). Har bir (report_event_id, role) uchun eng katta approval_id amal qiladi.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "approvals",
+    "next_after",
+    "has_more"
+  ],
+  "properties": {
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "approval_id",
+          "site_id",
+          "report_event_id",
+          "date",
+          "rating",
+          "comment",
+          "role",
+          "inspector",
+          "inspector_position",
+          "rated_at",
+          "superseded"
+        ],
+        "properties": {
+          "approval_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "site_id": {
+            "$ref": "common.json#/$defs/local_id"
+          },
+          "report_event_id": {
+            "$ref": "common.json#/$defs/uuid",
+            "description": "Baholangan kunlik hisobotning ANIQ versiyasi."
+          },
+          "date": {
+            "$ref": "common.json#/$defs/date"
+          },
+          "rating": {
+            "type": "string",
+            "enum": [
+              "good",
+              "satisfactory",
+              "unsatisfactory"
+            ],
+            "description": "good — yaxshi, satisfactory — qoniqarli, unsatisfactory — qoniqarsiz (izoh har doim bo'ladi)."
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "customer_supervisor",
+              "state_inspector"
+            ],
+            "description": "customer_supervisor — buyurtmachi texnik nazorati; state_inspector — davlat inspeksiyasi. Har bir rol alohida baholaydi, baholar o'rtacha hisoblanmaydi."
+          },
+          "inspector": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "inspector_position": {
+            "type": "string",
+            "maxLength": 410,
+            "description": "Baho qo'yilgan paytdagi lavozim va tashkilot (bo'sh bo'lishi mumkin)."
+          },
+          "rated_at": {
+            "$ref": "common.json#/$defs/datetime"
+          },
+          "superseded": {
+            "type": "boolean",
+            "description": "true — baholangan hisobot keyin tuzatilgan yoki bekor qilingan: baho eski versiyaga tegishli."
+          }
+        }
+      }
+    },
+    "next_after": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Keyingi so'rovda `after` sifatida beriladi."
+    },
+    "has_more": {
+      "type": "boolean"
+    }
+  }
+}

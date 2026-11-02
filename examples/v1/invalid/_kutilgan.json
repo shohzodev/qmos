@@ -74,5 +74,25 @@
   "batch--empty.json": {
     "code": "schema",
     "path": "/events"
+  },
+  "event--retracted-without-supersedes.json": {
+    "code": "schema",
+    "path": ""
+  },
+  "event--retracted-without-reason.json": {
+    "code": "schema",
+    "path": "/data"
+  },
+  "event--attachment-duplicate.json": {
+    "code": "semantic",
+    "path": "/data/attachments/1/media_id"
+  },
+  "event--attachment-unknown-kind.json": {
+    "code": "schema",
+    "path": "/data/attachments/0/kind"
+  },
+  "event--attachment-price-field.json": {
+    "code": "schema",
+    "path": "/data/attachments/0"
   }
 }

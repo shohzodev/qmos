@@ -1,0 +1,71 @@
+{
+  "spec_version": "1.1",
+  "event_id": "01928f3a-0000-7a00-8000-0000000000f4",
+  "event_type": "site.daily_report",
+  "occurred_at": "2026-10-02T19:20:00+05:00",
+  "source": {
+    "system": "buildops",
+    "system_version": "2.0.10"
+  },
+  "organization": {
+    "stir": "305123456"
+  },
+  "site_id": "obyekt-17",
+  "data": {
+    "date": "2026-10-02",
+    "workforce": {
+      "present": 23,
+      "verified_present": 21
+    },
+    "equipment": [
+      {
+        "type": "Ekskavator",
+        "plate_number": "70A123BC",
+        "engine_hours": 7.5,
+        "source": "gps"
+      },
+      {
+        "type": "Samosval",
+        "plate_number": "70B456CD",
+        "source": "manual"
+      }
+    ],
+    "work_done": [
+      {
+        "item_id": "wp-101",
+        "quantity": "310",
+        "unit": "m3"
+      },
+      {
+        "item_id": "wp-102",
+        "quantity": "45.5",
+        "unit": "m3"
+      }
+    ],
+    "quality": {
+      "status": "ok"
+    },
+    "attachments": [
+      {
+        "media_id": "01928f3b-1111-7a00-8000-0000000000aa",
+        "sha256": "9f2c6d0f7a3b1e5c8d4a2b6e0f1c3d5e7a9b0c2d4e6f8a1b3c5d7e9f0a2b4c6d",
+        "kind": "invoice",
+        "item_id": "wp-101",
+        "captured_at": "2026-10-02T11:42:00+05:00",
+        "location": {
+          "lat": 38.8612,
+          "lng": 65.7891
+        },
+        "note": "Gruntni qazish, shimoliy qism"
+      },
+      {
+        "media_id": "01928f3b-1111-7a00-8000-0000000000bb",
+        "sha256": "4b1d7e0a9c3f2e8d6b5a4c3e2f1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d",
+        "kind": "hidden_works_act",
+        "item_id": "wp-102",
+        "captured_at": "2026-10-02T17:05:00+05:00",
+        "note": "Poydevor armaturasi, yashirin ishlar akti No 14"
+      }
+    ]
+  }
+}

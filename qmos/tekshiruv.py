@@ -143,6 +143,18 @@ def mazmun_xatolari(hodisa, hozir=None):
         if kun > sodir.astimezone(TOSHKENT).date():
             xatolar.append(_xato('semantic', '/data/date', "Hisobot sanasi hodisa vaqtidan keyin."))
         xatolar += _takror_xatolari(d['work_done'], '/data/work_done')
+        korilgan = set()
+        for i, a in enumerate(d.get('attachments', [])):
+            if a['media_id'].lower() in korilgan:
+                xatolar.append(_xato('semantic', f'/data/attachments/{i}/media_id', "Bir fayl ro'yxatda ikki marta."))
+            korilgan.add(a['media_id'].lower())
+            if 'captured_at' in a and _vaqt_ol(a['captured_at']) - sodir > KELAJAK_CHEGARASI:
+                xatolar.append(_xato('semantic', f'/data/attachments/{i}/captured_at',
+                                     "Dalil hodisa qayd etilganidan keyin olingan."))
+
+    elif tur == 'site.daily_report_retracted':
+        if date.fromisoformat(d['date']) > sodir.astimezone(TOSHKENT).date():
+            xatolar.append(_xato('semantic', '/data/date', "Bekor qilinayotgan sana hodisa vaqtidan keyin."))
 
     elif tur == 'site.photo':
         if _vaqt_ol(d['taken_at']) - sodir > KELAJAK_CHEGARASI:

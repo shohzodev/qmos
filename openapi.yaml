@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: QMOS — Qurilish Monitoringi Ochiq Standarti
-  version: "1.0"
+  version: "1.1"
   summary: Qurilish obyektlari haqidagi jonli ma'lumotni markaziy monitoring tizimiga yuborish standarti.
   description: |
     Pudratchi tashkilotlar foydalanadigan istalgan dastur (ERP, hisob tizimi)
@@ -44,6 +44,30 @@ info:
     (qayta yuborish hujumidan himoya). Vaqtni tekshirish uchun `GET /v1/ping`.
     Python'da tayyor funksiya: `qmos.sign_request()`.
 
+    ## Kunlik hisobotni tuzatish va bekor qilish (1.1)
+
+    * **Tuzatish** — yangi `site.daily_report`, `supersedes` da joriy versiyaning
+      `event_id` si. Qisman o'zgarish har doim tuzatish.
+    * **Bekor qilish** — kun yuboruvchi tizimda butunlay o'chirilganda:
+      `site.daily_report_retracted` (`date`, majburiy `reason`), `supersedes` da
+      shu obyekt va shu sananing **joriy** hisoboti. Markazda o'sha kun "hisobot
+      kelmagan" bo'ladi; eski hisobot, sabab va baholar tarixda ko'rinadi.
+    * Bekor qilingandan keyin shu sanaga yangi hisobot kiritilsa, u `supersedes`
+      bilan bekor qilish hodisasiga havola qiladi.
+    * Markaz bekor qilish uchun muddat belgilashi mumkin (hisobot sanasidan
+      beri o'tgan kunlar). Muddat o'tgan bo'lsa hodisa `semantic` xato bilan
+      rad etiladi; xato matnida muddat ko'rsatiladi.
+
+    ## Dalillar (1.1)
+
+    Kunlik hisobotga rasm va hujjatlar `attachments` orqali biriktiriladi:
+    fayl avval `POST /v1/media` bilan yuklanadi (JPEG, PNG, WebP yoki PDF,
+    ≤ 10 MB), hisobotda `media_id` va `sha256` bilan havola qilinadi. Dalil
+    hisobot versiyasiga tegishli: tuzatilgan versiya o'z ro'yxatini to'liq olib
+    keladi, bekor qilinsa dalillar ham bekor bo'ladi. Rasm EXIF ma'lumoti bilan
+    (o'zgartirilmasdan) yuboriladi. Hisobotga bog'liq bo'lmagan suratlar uchun
+    `site.photo` saqlanadi.
+
     ## Versiyalash
 
     `1.x` ichida faqat **ixtiyoriy** maydon va yangi hodisa turi qo'shiladi —
@@ -66,6 +90,7 @@ security:
 tags:
   - name: Hodisalar
   - name: Fayllar
+  - name: Baholar
   - name: Xizmat
 paths:
   /v1/events:
@@ -106,11 +131,12 @@ paths:
     post:
       tags: [Fayllar]
       operationId: postMedia
-      summary: Rasm yuklash
+      summary: Fayl yuklash (rasm yoki PDF)
       description: |
-        Rasm fayli (≤ 10 MB) xom holda yuboriladi. Javobdagi `media_id`
-        `site.photo` yoki `site.incident` hodisasida ishlatiladi. Bir xil fayl
-        qayta yuklansa o'sha `media_id` qaytadi.
+        Fayl (≤ 10 MB) xom holda yuboriladi. Javobdagi `media_id`
+        `site.photo`, `site.incident` yoki kunlik hisobot `attachments` ida
+        ishlatiladi. Bir xil fayl qayta yuklansa o'sha `media_id` qaytadi.
+        PDF — 1.1 dan (hujjatlar: yashirin ishlar akti, laboratoriya xulosasi va h.k.).
       parameters:
         - name: X-QMOS-Content-SHA256
           in: header
@@ -128,6 +154,8 @@ paths:
             schema: {type: string, contentMediaType: image/png}
           image/webp:
             schema: {type: string, contentMediaType: image/webp}
+          application/pdf:
+            schema: {type: string, contentMediaType: application/pdf}
       responses:
         '201':
           description: Fayl saqlandi.
@@ -143,11 +171,55 @@ paths:
         '413':
           $ref: '#/components/responses/TooLarge'
         '415':
-          description: Fayl turi qo'llab-quvvatlanmaydi (faqat JPEG, PNG, WebP).
+          description: Fayl turi qo'llab-quvvatlanmaydi (faqat JPEG, PNG, WebP, PDF).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorBody'
+  /v1/approvals:
+    get:
+      tags: [Baholar]
+      operationId: getApprovals
+      summary: Nazoratchi baholarini olish (1.1)
+      description: |
+        Texnik nazoratchilar (buyurtmachi texnik nazorati va davlat inspeksiyasi)
+        markazda kunlik hisobotlarga qo'ygan baholari. Markaz kompaniyaga o'zi
+        murojaat qilmaydi: dastur baholarni shu yo'l bilan o'zi olib turadi
+        (tavsiya: 5 daqiqada bir). Faqat kalit tashkilotining obyektlari.
+
+        **Imzolanadigan yo'l query'siz**: `/v1/approvals`. Tana bo'sh.
+
+        Kursor: oxirgi olingan `next_after` keyingi so'rovda `after` bo'ladi;
+        `has_more=true` bo'lsa darhol yana so'raladi. Har bir
+        (`report_event_id`, `role`) uchun eng katta `approval_id` amal qiladi.
+        `superseded=true` — hisobot keyin tuzatilgan yoki bekor qilingan.
+      parameters:
+        - name: after
+          in: query
+          required: false
+          description: Shu approval_id dan keyingilari (standart 0).
+          schema: {type: integer, minimum: 0}
+        - name: limit
+          in: query
+          required: false
+          description: Bir javobdagi baholar soni (standart 100).
+          schema: {type: integer, minimum: 1, maximum: 500}
+      responses:
+        '200':
+          description: Baholar.
+          content:
+            application/json:
+              schema:
+                $ref: './qmos/schemas/v1/approvals-result.json'
+              x-misol-fayli: examples/v1/valid/approvals-result--two-roles.json
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/Unavailable'
   /v1/ping:
     get:
       tags: [Xizmat]

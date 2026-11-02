@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "site.daily_report_retracted — kunlik hisobotni bekor qilish (1.1)",
+  "description": "Markazga yuborilgan kunlik hisobot yuboruvchi tizimda butunlay o'chirilganda (masalan, boshqa obyektga xato kiritilgan). `supersedes` MAJBURIY va shu obyekt hamda shu sananing JORIY site.daily_report hodisasiga havola qiladi. Markazda o'sha kun \"hisobot kelmagan\" bo'ladi; eski hisobot, sabab va unga qo'yilgan baholar tarixda ko'rinib turadi. Shu sanaga keyin yangi hisobot kiritilsa, u `supersedes` bilan shu bekor qilish hodisasiga havola qiladi. Qisman o'zgarish — bekor qilish emas, odatdagi tuzatish (site.daily_report + supersedes).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "date",
+    "reason"
+  ],
+  "properties": {
+    "date": {
+      "$ref": "common.json#/$defs/date",
+      "description": "Bekor qilinayotgan hisobot sanasi (bekor qilinayotgan hodisadagi `date` bilan bir xil)."
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 500,
+      "description": "Sabab, masalan \"Boshqa obyektga xato kiritilgan\" yoki \"Hisobot yozuvlari direktor tomonidan o'chirildi\". Markazda nazoratchi va inspeksiyaga ko'rsatiladi."
+    }
+  }
+}

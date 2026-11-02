@@ -4,15 +4,29 @@
   "description": "Bitta obyektning bitta kundagi holati. Bir kun uchun qayta yuborilsa (yangi event_id, `supersedes` bilan) — markaz eng oxirgisini joriy deb oladi, eskisi tarixda saqlanadi. Ishchilar ISM-SHARIFI yuborilmaydi — faqat sonlar.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["date", "workforce", "equipment", "work_done"],
+  "required": [
+    "date",
+    "workforce",
+    "equipment",
+    "work_done"
+  ],
   "properties": {
-    "date": {"$ref": "common.json#/$defs/date"},
+    "date": {
+      "$ref": "common.json#/$defs/date"
+    },
     "workforce": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["present"],
+      "required": [
+        "present"
+      ],
       "properties": {
-        "present": {"type": "integer", "minimum": 0, "maximum": 100000, "description": "Shu kuni obyektda ishlaganlar soni."},
+        "present": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000,
+          "description": "Shu kuni obyektda ishlaganlar soni."
+        },
         "verified_present": {
           "type": "integer",
           "minimum": 0,
@@ -28,12 +42,35 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["type", "source"],
+        "required": [
+          "type",
+          "source"
+        ],
         "properties": {
-          "type": {"type": "string", "minLength": 1, "maxLength": 100, "description": "Texnika turi (Ekskavator, Samosval, Avtogreyder...)."},
-          "plate_number": {"type": "string", "maxLength": 20, "description": "Davlat raqami (bo'lsa)."},
-          "engine_hours": {"type": "number", "minimum": 0, "maximum": 24},
-          "source": {"type": "string", "enum": ["manual", "gps"], "description": "Ma'lumot manbai: qo'lda kiritilgan yoki GPS-treker."}
+          "type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Texnika turi (Ekskavator, Samosval, Avtogreyder...)."
+          },
+          "plate_number": {
+            "type": "string",
+            "maxLength": 20,
+            "description": "Davlat raqami (bo'lsa)."
+          },
+          "engine_hours": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 24
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "manual",
+              "gps"
+            ],
+            "description": "Ma'lumot manbai: qo'lda kiritilgan yoki GPS-treker."
+          }
         }
       }
     },
@@ -44,24 +81,112 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["item_id", "quantity", "unit"],
+        "required": [
+          "item_id",
+          "quantity",
+          "unit"
+        ],
         "properties": {
-          "item_id": {"$ref": "common.json#/$defs/local_id"},
-          "quantity": {"$ref": "common.json#/$defs/quantity"},
-          "unit": {"$ref": "common.json#/$defs/unit"}
+          "item_id": {
+            "$ref": "common.json#/$defs/local_id"
+          },
+          "quantity": {
+            "$ref": "common.json#/$defs/quantity"
+          },
+          "unit": {
+            "$ref": "common.json#/$defs/unit"
+          }
         }
       }
     },
     "quality": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status"],
+      "required": [
+        "status"
+      ],
       "properties": {
-        "status": {"type": "string", "enum": ["ok", "issue"]},
-        "note": {"$ref": "common.json#/$defs/text"}
+        "status": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "issue"
+          ]
+        },
+        "note": {
+          "$ref": "common.json#/$defs/text"
+        }
       },
-      "allOf": [{"if": {"properties": {"status": {"const": "issue"}}}, "then": {"required": ["note"]}}]
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "issue"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "note"
+            ]
+          }
+        }
+      ]
     },
-    "note": {"$ref": "common.json#/$defs/text"}
+    "note": {
+      "$ref": "common.json#/$defs/text"
+    },
+    "attachments": {
+      "type": "array",
+      "maxItems": 50,
+      "description": "Dalillar (1.1): shu hisobot versiyasiga tegishli rasm va hujjatlar. Fayl avval POST /v1/media bilan yuklanadi, bu yerda `media_id` va `sha256` bilan havola qilinadi (markaz ikkalasi mosligini tekshiradi, topilmasa — media_not_found). Hisobot tuzatilsa, yangi versiya o'z ro'yxatini to'liq olib keladi; bekor qilinsa, dalillar ham hisobot bilan birga bekor bo'ladi.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "media_id",
+          "sha256",
+          "kind"
+        ],
+        "properties": {
+          "media_id": {
+            "$ref": "common.json#/$defs/uuid"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "photo",
+              "hidden_works_act",
+              "lab_report",
+              "survey",
+              "certificate"
+            ],
+            "description": "photo — obyekt surati; hidden_works_act — yashirin ishlar akti; lab_report — laboratoriya xulosasi; survey — geodezik s'yomka; certificate — pasport yoki sertifikat."
+          },
+          "item_id": {
+            "$ref": "common.json#/$defs/local_id",
+            "description": "Dalil tegishli smeta qatori (site.work_plan dagi item_id), ixtiyoriy."
+          },
+          "captured_at": {
+            "$ref": "common.json#/$defs/datetime",
+            "description": "Suratga olingan yoki hujjat tuzilgan vaqt (rasmda — EXIF vaqti)."
+          },
+          "location": {
+            "$ref": "common.json#/$defs/coordinates",
+            "description": "Suratga olingan joy (EXIF GPS), faqat rasm uchun."
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      }
+    }
   }
 }

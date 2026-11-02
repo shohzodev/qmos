@@ -2,9 +2,9 @@
   "openapi": "3.1.0",
   "info": {
     "title": "QMOS — Qurilish Monitoringi Ochiq Standarti",
-    "version": "1.0",
+    "version": "1.1",
     "summary": "Qurilish obyektlari haqidagi jonli ma'lumotni markaziy monitoring tizimiga yuborish standarti.",
-    "description": "Pudratchi tashkilotlar foydalanadigan istalgan dastur (ERP, hisob tizimi)\nobyektlari haqidagi ma'lumotni shu standart bo'yicha markaziy monitoring\ntizimiga yuboradi. Markaz ma'lumotni **qabul qiladi, tekshiradi va\no'zgarmas holda saqlaydi**; viloyat va tuman bo'yicha ko'rinish SOATO\nkodlaridan yig'iladi.\n\n## Asosiy qoidalar\n\n* **Faqat yuborish (push).** Markaz tashkilot tizimiga hech qachon\n  murojaat qilmaydi. Tashkilot nima yuborilishini to'liq nazorat qiladi.\n* **Ma'lumotni minimallashtirish.** Moliya, ish haqi, narxlar va\n  ishchilarning shaxsiy ma'lumotlari yuborilMAYDI. Standartda ular uchun\n  maydon yo'q — sxema ortiqcha maydonni rad etadi.\n* **O'zgarmaslik.** Qabul qilingan hodisa o'zgartirilmaydi va\n  o'chirilmaydi. Tuzatish — yangi hodisa, `supersedes` bilan.\n* **Idempotentlik.** Bir xil `event_id` qayta yuborilsa `duplicate`\n  qaytadi va hech narsa o'zgarmaydi. Shu sabab tarmoq uzilganda qayta\n  yuborish xavfsiz. Bir xil `event_id` boshqa mazmun bilan kelsa —\n  `conflict`.\n* **Tartib.** Obyekt avval `site.profile` bilan ro'yxatga olinadi.\n  Boshqa hodisalar `occurred_at` bo'yicha tartiblanadi; kechikib kelgan\n  hodisa ham qabul qilinadi.\n\n## Autentifikatsiya (HMAC imzo)\n\nHar bir tashkilotga markaz `key_id` va maxfiy `secret` beradi. Har bir\nso'rovda uchta sarlavha yuboriladi:\n\n| Sarlavha | Qiymati |\n|---|---|\n| `X-QMOS-Key-Id` | kalit identifikatori |\n| `X-QMOS-Timestamp` | Unix vaqti, soniya |\n| `X-QMOS-Signature` | `hex(HMAC-SHA256(secret, imzo_satri))` |\n\n`imzo_satri = timestamp + \"\\n\" + METHOD + \"\\n\" + path + \"\\n\" + hex(SHA256(tana))`\n\nMarkaz vaqti bilan farq 300 soniyadan oshsa so'rov rad etiladi\n(qayta yuborish hujumidan himoya). Vaqtni tekshirish uchun `GET /v1/ping`.\nPython'da tayyor funksiya: `qmos.sign_request()`.\n\n## Versiyalash\n\n`1.x` ichida faqat **ixtiyoriy** maydon va yangi hodisa turi qo'shiladi —\neski yuboruvchilar buzilmaydi. Majburiy maydon qo'shish, maydonni olib\ntashlash yoki ma'nosini o'zgartirish — faqat `2.0` da, yangi `/v2/` yo'li\nbilan; `/v1/` kamida 12 oy parallel ishlaydi.\n",
+    "description": "Pudratchi tashkilotlar foydalanadigan istalgan dastur (ERP, hisob tizimi)\nobyektlari haqidagi ma'lumotni shu standart bo'yicha markaziy monitoring\ntizimiga yuboradi. Markaz ma'lumotni **qabul qiladi, tekshiradi va\no'zgarmas holda saqlaydi**; viloyat va tuman bo'yicha ko'rinish SOATO\nkodlaridan yig'iladi.\n\n## Asosiy qoidalar\n\n* **Faqat yuborish (push).** Markaz tashkilot tizimiga hech qachon\n  murojaat qilmaydi. Tashkilot nima yuborilishini to'liq nazorat qiladi.\n* **Ma'lumotni minimallashtirish.** Moliya, ish haqi, narxlar va\n  ishchilarning shaxsiy ma'lumotlari yuborilMAYDI. Standartda ular uchun\n  maydon yo'q — sxema ortiqcha maydonni rad etadi.\n* **O'zgarmaslik.** Qabul qilingan hodisa o'zgartirilmaydi va\n  o'chirilmaydi. Tuzatish — yangi hodisa, `supersedes` bilan.\n* **Idempotentlik.** Bir xil `event_id` qayta yuborilsa `duplicate`\n  qaytadi va hech narsa o'zgarmaydi. Shu sabab tarmoq uzilganda qayta\n  yuborish xavfsiz. Bir xil `event_id` boshqa mazmun bilan kelsa —\n  `conflict`.\n* **Tartib.** Obyekt avval `site.profile` bilan ro'yxatga olinadi.\n  Boshqa hodisalar `occurred_at` bo'yicha tartiblanadi; kechikib kelgan\n  hodisa ham qabul qilinadi.\n\n## Autentifikatsiya (HMAC imzo)\n\nHar bir tashkilotga markaz `key_id` va maxfiy `secret` beradi. Har bir\nso'rovda uchta sarlavha yuboriladi:\n\n| Sarlavha | Qiymati |\n|---|---|\n| `X-QMOS-Key-Id` | kalit identifikatori |\n| `X-QMOS-Timestamp` | Unix vaqti, soniya |\n| `X-QMOS-Signature` | `hex(HMAC-SHA256(secret, imzo_satri))` |\n\n`imzo_satri = timestamp + \"\\n\" + METHOD + \"\\n\" + path + \"\\n\" + hex(SHA256(tana))`\n\nMarkaz vaqti bilan farq 300 soniyadan oshsa so'rov rad etiladi\n(qayta yuborish hujumidan himoya). Vaqtni tekshirish uchun `GET /v1/ping`.\nPython'da tayyor funksiya: `qmos.sign_request()`.\n\n## Kunlik hisobotni tuzatish va bekor qilish (1.1)\n\n* **Tuzatish** — yangi `site.daily_report`, `supersedes` da joriy versiyaning\n  `event_id` si. Qisman o'zgarish har doim tuzatish.\n* **Bekor qilish** — kun yuboruvchi tizimda butunlay o'chirilganda:\n  `site.daily_report_retracted` (`date`, majburiy `reason`), `supersedes` da\n  shu obyekt va shu sananing **joriy** hisoboti. Markazda o'sha kun \"hisobot\n  kelmagan\" bo'ladi; eski hisobot, sabab va baholar tarixda ko'rinadi.\n* Bekor qilingandan keyin shu sanaga yangi hisobot kiritilsa, u `supersedes`\n  bilan bekor qilish hodisasiga havola qiladi.\n* Markaz bekor qilish uchun muddat belgilashi mumkin (hisobot sanasidan\n  beri o'tgan kunlar). Muddat o'tgan bo'lsa hodisa `semantic` xato bilan\n  rad etiladi; xato matnida muddat ko'rsatiladi.\n\n## Dalillar (1.1)\n\nKunlik hisobotga rasm va hujjatlar `attachments` orqali biriktiriladi:\nfayl avval `POST /v1/media` bilan yuklanadi (JPEG, PNG, WebP yoki PDF,\n≤ 10 MB), hisobotda `media_id` va `sha256` bilan havola qilinadi. Dalil\nhisobot versiyasiga tegishli: tuzatilgan versiya o'z ro'yxatini to'liq olib\nkeladi, bekor qilinsa dalillar ham bekor bo'ladi. Rasm EXIF ma'lumoti bilan\n(o'zgartirilmasdan) yuboriladi. Hisobotga bog'liq bo'lmagan suratlar uchun\n`site.photo` saqlanadi.\n\n## Versiyalash\n\n`1.x` ichida faqat **ixtiyoriy** maydon va yangi hodisa turi qo'shiladi —\neski yuboruvchilar buzilmaydi. Majburiy maydon qo'shish, maydonni olib\ntashlash yoki ma'nosini o'zgartirish — faqat `2.0` da, yangi `/v2/` yo'li\nbilan; `/v1/` kamida 12 oy parallel ishlaydi.\n",
     "license": {
       "name": "CC BY 4.0",
       "url": "https://creativecommons.org/licenses/by/4.0/"
@@ -34,6 +34,9 @@
     },
     {
       "name": "Fayllar"
+    },
+    {
+      "name": "Baholar"
     },
     {
       "name": "Xizmat"
@@ -255,8 +258,8 @@
           "Fayllar"
         ],
         "operationId": "postMedia",
-        "summary": "Rasm yuklash",
-        "description": "Rasm fayli (≤ 10 MB) xom holda yuboriladi. Javobdagi `media_id`\n`site.photo` yoki `site.incident` hodisasida ishlatiladi. Bir xil fayl\nqayta yuklansa o'sha `media_id` qaytadi.\n",
+        "summary": "Fayl yuklash (rasm yoki PDF)",
+        "description": "Fayl (≤ 10 MB) xom holda yuboriladi. Javobdagi `media_id`\n`site.photo`, `site.incident` yoki kunlik hisobot `attachments` ida\nishlatiladi. Bir xil fayl qayta yuklansa o'sha `media_id` qaytadi.\nPDF — 1.1 dan (hujjatlar: yashirin ishlar akti, laboratoriya xulosasi va h.k.).\n",
         "parameters": [
           {
             "name": "X-QMOS-Content-SHA256",
@@ -289,6 +292,12 @@
                 "type": "string",
                 "contentMediaType": "image/webp"
               }
+            },
+            "application/pdf": {
+              "schema": {
+                "type": "string",
+                "contentMediaType": "application/pdf"
+              }
             }
           }
         },
@@ -319,7 +328,7 @@
             "$ref": "#/components/responses/TooLarge"
           },
           "415": {
-            "description": "Fayl turi qo'llab-quvvatlanmaydi (faqat JPEG, PNG, WebP).",
+            "description": "Fayl turi qo'llab-quvvatlanmaydi (faqat JPEG, PNG, WebP, PDF).",
             "content": {
               "application/json": {
                 "schema": {
@@ -327,6 +336,95 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/v1/approvals": {
+      "get": {
+        "tags": [
+          "Baholar"
+        ],
+        "operationId": "getApprovals",
+        "summary": "Nazoratchi baholarini olish (1.1)",
+        "description": "Texnik nazoratchilar (buyurtmachi texnik nazorati va davlat inspeksiyasi)\nmarkazda kunlik hisobotlarga qo'ygan baholari. Markaz kompaniyaga o'zi\nmurojaat qilmaydi: dastur baholarni shu yo'l bilan o'zi olib turadi\n(tavsiya: 5 daqiqada bir). Faqat kalit tashkilotining obyektlari.\n\n**Imzolanadigan yo'l query'siz**: `/v1/approvals`. Tana bo'sh.\n\nKursor: oxirgi olingan `next_after` keyingi so'rovda `after` bo'ladi;\n`has_more=true` bo'lsa darhol yana so'raladi. Har bir\n(`report_event_id`, `role`) uchun eng katta `approval_id` amal qiladi.\n`superseded=true` — hisobot keyin tuzatilgan yoki bekor qilingan.\n",
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "description": "Shu approval_id dan keyingilari (standart 0).",
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Bir javobdagi baholar soni (standart 100).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Baholar.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalsResult"
+                },
+                "example": {
+                  "approvals": [
+                    {
+                      "approval_id": 41,
+                      "site_id": "obyekt-17",
+                      "report_event_id": "01928f3a-0000-7a00-8000-000000000005",
+                      "date": "2026-10-02",
+                      "rating": "good",
+                      "comment": "",
+                      "role": "customer_supervisor",
+                      "inspector": "Bobur Aliyev",
+                      "inspector_position": "Bosh muhandis, Ohangaron tumani hokimligi",
+                      "rated_at": "2026-10-03T05:12:40Z",
+                      "superseded": false
+                    },
+                    {
+                      "approval_id": 42,
+                      "site_id": "obyekt-17",
+                      "report_event_id": "01928f3a-0000-7a00-8000-000000000005",
+                      "date": "2026-10-02",
+                      "rating": "unsatisfactory",
+                      "comment": "Armatura qadami loyihadagidan katta (wp-102).",
+                      "role": "state_inspector",
+                      "inspector": "Aziz Karimov",
+                      "inspector_position": "Inspektor, Qurilish inspeksiyasi",
+                      "rated_at": "2026-10-03T06:40:02Z",
+                      "superseded": false
+                    }
+                  ],
+                  "next_after": 42,
+                  "has_more": false
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
           }
         }
       }
@@ -397,6 +495,100 @@
       }
     },
     "schemas": {
+      "ApprovalsResult": {
+        "title": "Nazoratchi baholari (GET /v1/approvals javobi, 1.1)",
+        "description": "Texnik nazoratchilar kunlik hisobotlarga markazda qo'ygan baholari. Faqat so'rov yuborgan kalit tashkilotining obyektlari. Kursor — approval_id (o'sib boradi). Har bir (report_event_id, role) uchun eng katta approval_id amal qiladi.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "approvals",
+          "next_after",
+          "has_more"
+        ],
+        "properties": {
+          "approvals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "approval_id",
+                "site_id",
+                "report_event_id",
+                "date",
+                "rating",
+                "comment",
+                "role",
+                "inspector",
+                "inspector_position",
+                "rated_at",
+                "superseded"
+              ],
+              "properties": {
+                "approval_id": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "site_id": {
+                  "$ref": "#/components/schemas/Common_local_id"
+                },
+                "report_event_id": {
+                  "$ref": "#/components/schemas/Common_uuid",
+                  "description": "Baholangan kunlik hisobotning ANIQ versiyasi."
+                },
+                "date": {
+                  "$ref": "#/components/schemas/Common_date"
+                },
+                "rating": {
+                  "type": "string",
+                  "enum": [
+                    "good",
+                    "satisfactory",
+                    "unsatisfactory"
+                  ],
+                  "description": "good — yaxshi, satisfactory — qoniqarli, unsatisfactory — qoniqarsiz (izoh har doim bo'ladi)."
+                },
+                "comment": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "customer_supervisor",
+                    "state_inspector"
+                  ],
+                  "description": "customer_supervisor — buyurtmachi texnik nazorati; state_inspector — davlat inspeksiyasi. Har bir rol alohida baholaydi, baholar o'rtacha hisoblanmaydi."
+                },
+                "inspector": {
+                  "type": "string",
+                  "maxLength": 300
+                },
+                "inspector_position": {
+                  "type": "string",
+                  "maxLength": 410,
+                  "description": "Baho qo'yilgan paytdagi lavozim va tashkilot (bo'sh bo'lishi mumkin)."
+                },
+                "rated_at": {
+                  "$ref": "#/components/schemas/Common_datetime"
+                },
+                "superseded": {
+                  "type": "boolean",
+                  "description": "true — baholangan hisobot keyin tuzatilgan yoki bekor qilingan: baho eski versiyaga tegishli."
+                }
+              }
+            }
+          },
+          "next_after": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Keyingi so'rovda `after` sifatida beriladi."
+          },
+          "has_more": {
+            "type": "boolean"
+          }
+        }
+      },
       "BatchResult": {
         "title": "Hodisalar to'plami (javob)",
         "description": "Har bir yuborilgan hodisa uchun bitta natija, so'rovdagi tartibda. `accepted` va `duplicate` — yuboruvchi hodisani yuborilgan deb belgilaydi. `rejected` — qayta yuborish foydasiz, xatoni tuzatish kerak. `retry` — markaz vaqtincha qabul qila olmadi, keyinroq xuddi shu hodisani qayta yuborish kerak.",
@@ -558,6 +750,28 @@
           }
         }
       },
+      "DailyReportRetracted": {
+        "title": "site.daily_report_retracted — kunlik hisobotni bekor qilish (1.1)",
+        "description": "Markazga yuborilgan kunlik hisobot yuboruvchi tizimda butunlay o'chirilganda (masalan, boshqa obyektga xato kiritilgan). `supersedes` MAJBURIY va shu obyekt hamda shu sananing JORIY site.daily_report hodisasiga havola qiladi. Markazda o'sha kun \"hisobot kelmagan\" bo'ladi; eski hisobot, sabab va unga qo'yilgan baholar tarixda ko'rinib turadi. Shu sanaga keyin yangi hisobot kiritilsa, u `supersedes` bilan shu bekor qilish hodisasiga havola qiladi. Qisman o'zgarish — bekor qilish emas, odatdagi tuzatish (site.daily_report + supersedes).",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "reason"
+        ],
+        "properties": {
+          "date": {
+            "$ref": "#/components/schemas/Common_date",
+            "description": "Bekor qilinayotgan hisobot sanasi (bekor qilinayotgan hodisadagi `date` bilan bir xil)."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 500,
+            "description": "Sabab, masalan \"Boshqa obyektga xato kiritilgan\" yoki \"Hisobot yozuvlari direktor tomonidan o'chirildi\". Markazda nazoratchi va inspeksiyaga ko'rsatiladi."
+          }
+        }
+      },
       "DailyReport": {
         "title": "site.daily_report — kunlik hisobot",
         "description": "Bitta obyektning bitta kundagi holati. Bir kun uchun qayta yuborilsa (yangi event_id, `supersedes` bilan) — markaz eng oxirgisini joriy deb oladi, eskisi tarixda saqlanadi. Ishchilar ISM-SHARIFI yuborilmaydi — faqat sonlar.",
@@ -695,6 +909,57 @@
           },
           "note": {
             "$ref": "#/components/schemas/Common_text"
+          },
+          "attachments": {
+            "type": "array",
+            "maxItems": 50,
+            "description": "Dalillar (1.1): shu hisobot versiyasiga tegishli rasm va hujjatlar. Fayl avval POST /v1/media bilan yuklanadi, bu yerda `media_id` va `sha256` bilan havola qilinadi (markaz ikkalasi mosligini tekshiradi, topilmasa — media_not_found). Hisobot tuzatilsa, yangi versiya o'z ro'yxatini to'liq olib keladi; bekor qilinsa, dalillar ham hisobot bilan birga bekor bo'ladi.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "media_id",
+                "sha256",
+                "kind"
+              ],
+              "properties": {
+                "media_id": {
+                  "$ref": "#/components/schemas/Common_uuid"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "photo",
+                    "hidden_works_act",
+                    "lab_report",
+                    "survey",
+                    "certificate"
+                  ],
+                  "description": "photo — obyekt surati; hidden_works_act — yashirin ishlar akti; lab_report — laboratoriya xulosasi; survey — geodezik s'yomka; certificate — pasport yoki sertifikat."
+                },
+                "item_id": {
+                  "$ref": "#/components/schemas/Common_local_id",
+                  "description": "Dalil tegishli smeta qatori (site.work_plan dagi item_id), ixtiyoriy."
+                },
+                "captured_at": {
+                  "$ref": "#/components/schemas/Common_datetime",
+                  "description": "Suratga olingan yoki hujjat tuzilgan vaqt (rasmda — EXIF vaqti)."
+                },
+                "location": {
+                  "$ref": "#/components/schemas/Common_coordinates",
+                  "description": "Suratga olingan joy (EXIF GPS), faqat rasm uchun."
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                }
+              }
+            }
           }
         }
       },
@@ -767,7 +1032,8 @@
               "site.work_plan",
               "site.daily_report",
               "site.photo",
-              "site.incident"
+              "site.incident",
+              "site.daily_report_retracted"
             ]
           },
           "occurred_at": {
@@ -814,7 +1080,7 @@
           },
           "supersedes": {
             "$ref": "#/components/schemas/Common_uuid",
-            "description": "Shu hodisa tuzatayotgan oldingi hodisa. U bilan bir xil event_type, organization va site_id bo'lishi shart."
+            "description": "Shu hodisa tuzatayotgan (yoki bekor qilayotgan) oldingi hodisa. U bilan bir xil organization va site_id, bir xil event_type bo'lishi shart. Istisno — kunlik hisobot oilasi: site.daily_report va site.daily_report_retracted bir-birini almashtira oladi (1.1)."
           },
           "data": {
             "type": "object"
@@ -934,6 +1200,28 @@
                 }
               }
             }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "site.daily_report_retracted"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "required": [
+                "supersedes"
+              ],
+              "properties": {
+                "data": {
+                  "$ref": "#/components/schemas/DailyReportRetracted"
+                }
+              }
+            }
           }
         ]
       },
@@ -1011,7 +1299,8 @@
             "enum": [
               "image/jpeg",
               "image/png",
-              "image/webp"
+              "image/webp",
+              "application/pdf"
             ]
           }
         }

@@ -1,0 +1,32 @@
+{
+  "approvals": [
+    {
+      "approval_id": 41,
+      "site_id": "obyekt-17",
+      "report_event_id": "01928f3a-0000-7a00-8000-000000000005",
+      "date": "2026-10-02",
+      "rating": "good",
+      "comment": "",
+      "role": "customer_supervisor",
+      "inspector": "Bobur Aliyev",
+      "inspector_position": "Bosh muhandis, Ohangaron tumani hokimligi",
+      "rated_at": "2026-10-03T05:12:40Z",
+      "superseded": false
+    },
+    {
+      "approval_id": 42,
+      "site_id": "obyekt-17",
+      "report_event_id": "01928f3a-0000-7a00-8000-000000000005",
+      "date": "2026-10-02",
+      "rating": "unsatisfactory",
+      "comment": "Armatura qadami loyihadagidan katta (wp-102).",
+      "role": "state_inspector",
+      "inspector": "Aziz Karimov",
+      "inspector_position": "Inspektor, Qurilish inspeksiyasi",
+      "rated_at": "2026-10-03T06:40:02Z",
+      "superseded": false
+    }
+  ],
+  "next_after": 42,
+  "has_more": false
+}
