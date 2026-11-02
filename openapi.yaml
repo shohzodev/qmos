@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: QMOS — Qurilish Monitoringi Ochiq Standarti
-  version: "1.1"
+  version: "1.2"
   summary: Qurilish obyektlari haqidagi jonli ma'lumotni markaziy monitoring tizimiga yuborish standarti.
   description: |
     Pudratchi tashkilotlar foydalanadigan istalgan dastur (ERP, hisob tizimi)
@@ -67,6 +67,18 @@ info:
     keladi, bekor qilinsa dalillar ham bekor bo'ladi. Rasm EXIF ma'lumoti bilan
     (o'zgartirilmasdan) yuboriladi. Hisobotga bog'liq bo'lmagan suratlar uchun
     `site.photo` saqlanadi.
+
+    ## Texnik nazoratchilar (1.2)
+
+    Obyektga nazoratchilarni pudratchi rahbari yuboruvchi tizimda biriktiradi va
+    ro'yxat `site.supervisors` hodisasi bilan TO'LIQ nusxa sifatida yuboriladi
+    (`supervisor_id`, `role`: `customer_supervisor` yoki `state_inspector`,
+    `full_name`, `phone`, ixtiyoriy `position`, `organization`). Har o'zgarishda
+    butun ro'yxat qayta yuboriladi, eng so'nggisi amal qiladi. Nazoratchi
+    markazga telefon raqami bilan kiradi va PIN'ni SMS-kod orqali o'zi
+    o'rnatadi; yuboruvchi tizim kirish ma'lumotini bilmaydi. Mustaqillik uchun
+    `state_inspector` markaz tasdiqlagunicha baho qo'ya olmaydi. Baholar
+    avvalgidek `GET /v1/approvals` orqali qaytadi.
 
     ## Versiyalash
 

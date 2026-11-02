@@ -1,0 +1,34 @@
+{
+  "spec_version": "1.2",
+  "event_id": "01928f3a-0000-7a00-8000-0000000000e2",
+  "event_type": "site.supervisors",
+  "occurred_at": "2026-10-01T10:00:00+05:00",
+  "source": {
+    "system": "buildops",
+    "system_version": "2.0.10"
+  },
+  "organization": {
+    "stir": "305123456"
+  },
+  "site_id": "obyekt-17",
+  "data": {
+    "supervisors": [
+      {
+        "supervisor_id": "sup-12",
+        "role": "customer_supervisor",
+        "full_name": "Aliyev Bobur Karimovich",
+        "phone": "901234567",
+        "position": "Bosh muhandis",
+        "organization": "Ohangaron tumani hokimligi"
+      },
+      {
+        "supervisor_id": "sup-15",
+        "role": "state_inspector",
+        "full_name": "Karimov Aziz Olimovich",
+        "phone": "+998935554433",
+        "position": "Bosh inspektor",
+        "organization": "Qurilish va uy-joy kommunal xo'jaligi sohasida nazorat inspeksiyasi"
+      }
+    ]
+  }
+}

@@ -94,5 +94,17 @@
   "event--attachment-price-field.json": {
     "code": "schema",
     "path": "/data/attachments/0"
+  },
+  "event--supervisors-duplicate-phone.json": {
+    "code": "semantic",
+    "path": "/data/supervisors/1/phone"
+  },
+  "event--supervisors-bad-phone.json": {
+    "code": "schema",
+    "path": "/data/supervisors/0/phone"
+  },
+  "event--supervisors-unknown-role.json": {
+    "code": "schema",
+    "path": "/data/supervisors/0/role"
   }
 }

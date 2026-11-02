@@ -9,9 +9,9 @@ shu funksiyani chaqiradi.
 from .imzo import imzoni_tekshir, imzola, sign_request
 from .tekshiruv import hodisa_xatolari, mazmun_xatolari, sxema_xatolari, sxemalar, tekshir, validator
 
-SPEC_VERSION = '1.1'
+SPEC_VERSION = '1.2'
 # Markaz qabul qiladigan kichik versiyalar (1.x ichida faqat qo'shimchalar: eski yuboruvchilar buzilmaydi).
-SPEC_VERSIONS = ('1.0', '1.1')
+SPEC_VERSIONS = ('1.0', '1.1', '1.2')
 
 # Kunlik hisobot oilasi: bu turlar `supersedes` orqali bir-birini almashtira oladi (1.1).
 KUNLIK_HISOBOT_OILASI = ('site.daily_report', 'site.daily_report_retracted')

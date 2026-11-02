@@ -1,6 +1,6 @@
 # QMOS — Qurilish Monitoringi Ochiq Standarti
 
-**Versiya 1.1.** Qurilish obyektlari haqidagi jonli ma'lumotni pudratchi
+**Versiya 1.2.** Qurilish obyektlari haqidagi jonli ma'lumotni pudratchi
 tashkilotlar dasturidan markaziy monitoring tizimiga (qurilish inspeksiyasi,
 hokimliklar) yuborish standarti.
 
@@ -42,6 +42,7 @@ hujjat bo'yicha ulana oladi. BuildOps — uning birinchi ilovasi.
 | `site.photo` | Surat qo'shilganda | rasm (`POST /v1/media` orqali), vaqt, joylashuv |
 | `site.incident` | Hodisa ro'y berganda | baxtsiz hodisa, xavfsizlik buzilishi, ish to'xtashi, material yetishmasligi |
 | `site.daily_report_retracted` (1.1) | Yuborilgan kunlik hisobot butunlay o'chirilganda | sana, sabab; `supersedes` — joriy hisobot |
+| `site.supervisors` (1.2) | Obyekt nazoratchilari o'zgarganda (to'liq ro'yxat) | rol, F.I.Sh., telefon, lavozim, tashkilot |
 
 Kunlik hisobotga dalillar (rasm va PDF hujjatlar) `attachments` orqali biriktiriladi (1.1).
 Nazoratchi baholari markazdan `GET /v1/approvals` bilan olinadi (1.1). O'zgarishlar: `CHANGELOG.md`.

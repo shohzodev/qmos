@@ -1,5 +1,15 @@
 # O'zgarishlar tarixi
 
+## 1.2 — 2026-11-02
+
+Faqat qo'shimchalar: 1.0 va 1.1 yuboruvchilari o'zgarishsiz ishlayveradi.
+
+- Yangi hodisa turi `site.supervisors`: obyektning texnik nazoratchilari ro'yxati (to'liq nusxa, eng so'nggisi
+  amal qiladi). Har biri: `supervisor_id`, `role` (`customer_supervisor` / `state_inspector`), `full_name`,
+  `phone`, ixtiyoriy `position`, `organization`. Ro'yxatda `supervisor_id` va `phone` noyob (mazmun tekshiruvi).
+- Nazoratchi markazga telefon va o'zi o'rnatgan PIN bilan kiradi; `state_inspector` markaz tasdiqlagunicha
+  baho qo'ya olmaydi.
+
 ## 1.1 — 2026-11-02
 
 Faqat qo'shimchalar: 1.0 yuboruvchilari o'zgarishsiz ishlayveradi (`spec_version` "1.0" ham qabul qilinadi).

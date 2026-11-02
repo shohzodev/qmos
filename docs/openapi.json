@@ -2,9 +2,9 @@
   "openapi": "3.1.0",
   "info": {
     "title": "QMOS — Qurilish Monitoringi Ochiq Standarti",
-    "version": "1.1",
+    "version": "1.2",
     "summary": "Qurilish obyektlari haqidagi jonli ma'lumotni markaziy monitoring tizimiga yuborish standarti.",
-    "description": "Pudratchi tashkilotlar foydalanadigan istalgan dastur (ERP, hisob tizimi)\nobyektlari haqidagi ma'lumotni shu standart bo'yicha markaziy monitoring\ntizimiga yuboradi. Markaz ma'lumotni **qabul qiladi, tekshiradi va\no'zgarmas holda saqlaydi**; viloyat va tuman bo'yicha ko'rinish SOATO\nkodlaridan yig'iladi.\n\n## Asosiy qoidalar\n\n* **Faqat yuborish (push).** Markaz tashkilot tizimiga hech qachon\n  murojaat qilmaydi. Tashkilot nima yuborilishini to'liq nazorat qiladi.\n* **Ma'lumotni minimallashtirish.** Moliya, ish haqi, narxlar va\n  ishchilarning shaxsiy ma'lumotlari yuborilMAYDI. Standartda ular uchun\n  maydon yo'q — sxema ortiqcha maydonni rad etadi.\n* **O'zgarmaslik.** Qabul qilingan hodisa o'zgartirilmaydi va\n  o'chirilmaydi. Tuzatish — yangi hodisa, `supersedes` bilan.\n* **Idempotentlik.** Bir xil `event_id` qayta yuborilsa `duplicate`\n  qaytadi va hech narsa o'zgarmaydi. Shu sabab tarmoq uzilganda qayta\n  yuborish xavfsiz. Bir xil `event_id` boshqa mazmun bilan kelsa —\n  `conflict`.\n* **Tartib.** Obyekt avval `site.profile` bilan ro'yxatga olinadi.\n  Boshqa hodisalar `occurred_at` bo'yicha tartiblanadi; kechikib kelgan\n  hodisa ham qabul qilinadi.\n\n## Autentifikatsiya (HMAC imzo)\n\nHar bir tashkilotga markaz `key_id` va maxfiy `secret` beradi. Har bir\nso'rovda uchta sarlavha yuboriladi:\n\n| Sarlavha | Qiymati |\n|---|---|\n| `X-QMOS-Key-Id` | kalit identifikatori |\n| `X-QMOS-Timestamp` | Unix vaqti, soniya |\n| `X-QMOS-Signature` | `hex(HMAC-SHA256(secret, imzo_satri))` |\n\n`imzo_satri = timestamp + \"\\n\" + METHOD + \"\\n\" + path + \"\\n\" + hex(SHA256(tana))`\n\nMarkaz vaqti bilan farq 300 soniyadan oshsa so'rov rad etiladi\n(qayta yuborish hujumidan himoya). Vaqtni tekshirish uchun `GET /v1/ping`.\nPython'da tayyor funksiya: `qmos.sign_request()`.\n\n## Kunlik hisobotni tuzatish va bekor qilish (1.1)\n\n* **Tuzatish** — yangi `site.daily_report`, `supersedes` da joriy versiyaning\n  `event_id` si. Qisman o'zgarish har doim tuzatish.\n* **Bekor qilish** — kun yuboruvchi tizimda butunlay o'chirilganda:\n  `site.daily_report_retracted` (`date`, majburiy `reason`), `supersedes` da\n  shu obyekt va shu sananing **joriy** hisoboti. Markazda o'sha kun \"hisobot\n  kelmagan\" bo'ladi; eski hisobot, sabab va baholar tarixda ko'rinadi.\n* Bekor qilingandan keyin shu sanaga yangi hisobot kiritilsa, u `supersedes`\n  bilan bekor qilish hodisasiga havola qiladi.\n* Markaz bekor qilish uchun muddat belgilashi mumkin (hisobot sanasidan\n  beri o'tgan kunlar). Muddat o'tgan bo'lsa hodisa `semantic` xato bilan\n  rad etiladi; xato matnida muddat ko'rsatiladi.\n\n## Dalillar (1.1)\n\nKunlik hisobotga rasm va hujjatlar `attachments` orqali biriktiriladi:\nfayl avval `POST /v1/media` bilan yuklanadi (JPEG, PNG, WebP yoki PDF,\n≤ 10 MB), hisobotda `media_id` va `sha256` bilan havola qilinadi. Dalil\nhisobot versiyasiga tegishli: tuzatilgan versiya o'z ro'yxatini to'liq olib\nkeladi, bekor qilinsa dalillar ham bekor bo'ladi. Rasm EXIF ma'lumoti bilan\n(o'zgartirilmasdan) yuboriladi. Hisobotga bog'liq bo'lmagan suratlar uchun\n`site.photo` saqlanadi.\n\n## Versiyalash\n\n`1.x` ichida faqat **ixtiyoriy** maydon va yangi hodisa turi qo'shiladi —\neski yuboruvchilar buzilmaydi. Majburiy maydon qo'shish, maydonni olib\ntashlash yoki ma'nosini o'zgartirish — faqat `2.0` da, yangi `/v2/` yo'li\nbilan; `/v1/` kamida 12 oy parallel ishlaydi.\n",
+    "description": "Pudratchi tashkilotlar foydalanadigan istalgan dastur (ERP, hisob tizimi)\nobyektlari haqidagi ma'lumotni shu standart bo'yicha markaziy monitoring\ntizimiga yuboradi. Markaz ma'lumotni **qabul qiladi, tekshiradi va\no'zgarmas holda saqlaydi**; viloyat va tuman bo'yicha ko'rinish SOATO\nkodlaridan yig'iladi.\n\n## Asosiy qoidalar\n\n* **Faqat yuborish (push).** Markaz tashkilot tizimiga hech qachon\n  murojaat qilmaydi. Tashkilot nima yuborilishini to'liq nazorat qiladi.\n* **Ma'lumotni minimallashtirish.** Moliya, ish haqi, narxlar va\n  ishchilarning shaxsiy ma'lumotlari yuborilMAYDI. Standartda ular uchun\n  maydon yo'q — sxema ortiqcha maydonni rad etadi.\n* **O'zgarmaslik.** Qabul qilingan hodisa o'zgartirilmaydi va\n  o'chirilmaydi. Tuzatish — yangi hodisa, `supersedes` bilan.\n* **Idempotentlik.** Bir xil `event_id` qayta yuborilsa `duplicate`\n  qaytadi va hech narsa o'zgarmaydi. Shu sabab tarmoq uzilganda qayta\n  yuborish xavfsiz. Bir xil `event_id` boshqa mazmun bilan kelsa —\n  `conflict`.\n* **Tartib.** Obyekt avval `site.profile` bilan ro'yxatga olinadi.\n  Boshqa hodisalar `occurred_at` bo'yicha tartiblanadi; kechikib kelgan\n  hodisa ham qabul qilinadi.\n\n## Autentifikatsiya (HMAC imzo)\n\nHar bir tashkilotga markaz `key_id` va maxfiy `secret` beradi. Har bir\nso'rovda uchta sarlavha yuboriladi:\n\n| Sarlavha | Qiymati |\n|---|---|\n| `X-QMOS-Key-Id` | kalit identifikatori |\n| `X-QMOS-Timestamp` | Unix vaqti, soniya |\n| `X-QMOS-Signature` | `hex(HMAC-SHA256(secret, imzo_satri))` |\n\n`imzo_satri = timestamp + \"\\n\" + METHOD + \"\\n\" + path + \"\\n\" + hex(SHA256(tana))`\n\nMarkaz vaqti bilan farq 300 soniyadan oshsa so'rov rad etiladi\n(qayta yuborish hujumidan himoya). Vaqtni tekshirish uchun `GET /v1/ping`.\nPython'da tayyor funksiya: `qmos.sign_request()`.\n\n## Kunlik hisobotni tuzatish va bekor qilish (1.1)\n\n* **Tuzatish** — yangi `site.daily_report`, `supersedes` da joriy versiyaning\n  `event_id` si. Qisman o'zgarish har doim tuzatish.\n* **Bekor qilish** — kun yuboruvchi tizimda butunlay o'chirilganda:\n  `site.daily_report_retracted` (`date`, majburiy `reason`), `supersedes` da\n  shu obyekt va shu sananing **joriy** hisoboti. Markazda o'sha kun \"hisobot\n  kelmagan\" bo'ladi; eski hisobot, sabab va baholar tarixda ko'rinadi.\n* Bekor qilingandan keyin shu sanaga yangi hisobot kiritilsa, u `supersedes`\n  bilan bekor qilish hodisasiga havola qiladi.\n* Markaz bekor qilish uchun muddat belgilashi mumkin (hisobot sanasidan\n  beri o'tgan kunlar). Muddat o'tgan bo'lsa hodisa `semantic` xato bilan\n  rad etiladi; xato matnida muddat ko'rsatiladi.\n\n## Dalillar (1.1)\n\nKunlik hisobotga rasm va hujjatlar `attachments` orqali biriktiriladi:\nfayl avval `POST /v1/media` bilan yuklanadi (JPEG, PNG, WebP yoki PDF,\n≤ 10 MB), hisobotda `media_id` va `sha256` bilan havola qilinadi. Dalil\nhisobot versiyasiga tegishli: tuzatilgan versiya o'z ro'yxatini to'liq olib\nkeladi, bekor qilinsa dalillar ham bekor bo'ladi. Rasm EXIF ma'lumoti bilan\n(o'zgartirilmasdan) yuboriladi. Hisobotga bog'liq bo'lmagan suratlar uchun\n`site.photo` saqlanadi.\n\n## Texnik nazoratchilar (1.2)\n\nObyektga nazoratchilarni pudratchi rahbari yuboruvchi tizimda biriktiradi va\nro'yxat `site.supervisors` hodisasi bilan TO'LIQ nusxa sifatida yuboriladi\n(`supervisor_id`, `role`: `customer_supervisor` yoki `state_inspector`,\n`full_name`, `phone`, ixtiyoriy `position`, `organization`). Har o'zgarishda\nbutun ro'yxat qayta yuboriladi, eng so'nggisi amal qiladi. Nazoratchi\nmarkazga telefon raqami bilan kiradi va PIN'ni SMS-kod orqali o'zi\no'rnatadi; yuboruvchi tizim kirish ma'lumotini bilmaydi. Mustaqillik uchun\n`state_inspector` markaz tasdiqlagunicha baho qo'ya olmaydi. Baholar\navvalgidek `GET /v1/approvals` orqali qaytadi.\n\n## Versiyalash\n\n`1.x` ichida faqat **ixtiyoriy** maydon va yangi hodisa turi qo'shiladi —\neski yuboruvchilar buzilmaydi. Majburiy maydon qo'shish, maydonni olib\ntashlash yoki ma'nosini o'zgartirish — faqat `2.0` da, yangi `/v2/` yo'li\nbilan; `/v1/` kamida 12 oy parallel ishlaydi.\n",
     "license": {
       "name": "CC BY 4.0",
       "url": "https://creativecommons.org/licenses/by/4.0/"
@@ -1033,7 +1033,8 @@
               "site.daily_report",
               "site.photo",
               "site.incident",
-              "site.daily_report_retracted"
+              "site.daily_report_retracted",
+              "site.supervisors"
             ]
           },
           "occurred_at": {
@@ -1219,6 +1220,25 @@
               "properties": {
                 "data": {
                   "$ref": "#/components/schemas/DailyReportRetracted"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "event_type": {
+                  "const": "site.supervisors"
+                }
+              },
+              "required": [
+                "event_type"
+              ]
+            },
+            "then": {
+              "properties": {
+                "data": {
+                  "$ref": "#/components/schemas/SiteSupervisors"
                 }
               }
             }
@@ -1523,6 +1543,68 @@
             }
           }
         ]
+      },
+      "SiteSupervisors": {
+        "title": "site.supervisors — obyektning texnik nazoratchilari (1.2)",
+        "description": "Obyektga biriktirilgan nazoratchilarning JORIY ro'yxati, TO'LIQ nusxa: har o'zgarishda (qo'shish, tahrirlash, olib tashlash) butun ro'yxat qayta yuboriladi. Markazda eng so'nggi (`occurred_at` bo'yicha) hodisa amal qiladi; ro'yxatda yo'q nazoratchining shu obyektga biriktiruvi tugatiladi, uning qo'ygan baholari esa o'zgarmas tarixda qoladi. Bo'sh ro'yxat — obyektda nazoratchi yo'q. Nazoratchilar markazga telefon raqami bilan kiradi va kirish ma'lumotini (PIN) o'zi o'rnatadi: yuboruvchi tizim uni bilmaydi. Mustaqillik uchun markaz `state_inspector` ni tasdiqlamaguncha u baho qo'ya olmaydi. Shaxsga doir ma'lumot: faqat shu yerda sanalgan maydonlar.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "supervisors"
+        ],
+        "properties": {
+          "supervisors": {
+            "type": "array",
+            "maxItems": 20,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "supervisor_id",
+                "role",
+                "full_name",
+                "phone"
+              ],
+              "properties": {
+                "supervisor_id": {
+                  "$ref": "#/components/schemas/Common_local_id",
+                  "description": "Nazoratchining yuboruvchi tizimdagi o'zgarmas identifikatori (shu obyekt ro'yxatida noyob)."
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "customer_supervisor",
+                    "state_inspector"
+                  ],
+                  "description": "Buyurtmachi texnik nazoratchisi yoki davlat inspeksiyasi xodimi. Bir rolda bir nechta nazoratchi bo'lishi mumkin."
+                },
+                "full_name": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 200,
+                  "description": "F.I.Sh."
+                },
+                "phone": {
+                  "type": "string",
+                  "pattern": "^\\+998[0-9]{9}$",
+                  "description": "Markazga kirish uchun telefon raqami (SMS-kod shu raqamga yuboriladi). Ro'yxatda noyob."
+                },
+                "position": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200,
+                  "description": "Lavozimi."
+                },
+                "organization": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300,
+                  "description": "Tashkiloti (masalan, buyurtmachi yoki inspeksiya nomi)."
+                }
+              }
+            }
+          }
+        }
       },
       "WorkPlan": {
         "title": "site.work_plan — rejalashtirilgan ish hajmlari",

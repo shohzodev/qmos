@@ -156,6 +156,17 @@ def mazmun_xatolari(hodisa, hozir=None):
         if date.fromisoformat(d['date']) > sodir.astimezone(TOSHKENT).date():
             xatolar.append(_xato('semantic', '/data/date', "Bekor qilinayotgan sana hodisa vaqtidan keyin."))
 
+    elif tur == 'site.supervisors':
+        idlar, telefonlar = set(), set()
+        for i, n in enumerate(d['supervisors']):
+            if n['supervisor_id'] in idlar:
+                xatolar.append(_xato('semantic', f'/data/supervisors/{i}/supervisor_id', "supervisor_id takrorlangan."))
+            if n['phone'] in telefonlar:
+                xatolar.append(_xato('semantic', f'/data/supervisors/{i}/phone',
+                                     "Bir telefon raqami ro'yxatda ikki marta (bir odam bitta rolda bo'ladi)."))
+            idlar.add(n['supervisor_id'])
+            telefonlar.add(n['phone'])
+
     elif tur == 'site.photo':
         if _vaqt_ol(d['taken_at']) - sodir > KELAJAK_CHEGARASI:
             xatolar.append(_xato('semantic', '/data/taken_at', "Surat hodisa qayd etilganidan keyin olingan."))

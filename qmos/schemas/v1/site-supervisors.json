@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "site.supervisors — obyektning texnik nazoratchilari (1.2)",
+  "description": "Obyektga biriktirilgan nazoratchilarning JORIY ro'yxati, TO'LIQ nusxa: har o'zgarishda (qo'shish, tahrirlash, olib tashlash) butun ro'yxat qayta yuboriladi. Markazda eng so'nggi (`occurred_at` bo'yicha) hodisa amal qiladi; ro'yxatda yo'q nazoratchining shu obyektga biriktiruvi tugatiladi, uning qo'ygan baholari esa o'zgarmas tarixda qoladi. Bo'sh ro'yxat — obyektda nazoratchi yo'q. Nazoratchilar markazga telefon raqami bilan kiradi va kirish ma'lumotini (PIN) o'zi o'rnatadi: yuboruvchi tizim uni bilmaydi. Mustaqillik uchun markaz `state_inspector` ni tasdiqlamaguncha u baho qo'ya olmaydi. Shaxsga doir ma'lumot: faqat shu yerda sanalgan maydonlar.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["supervisors"],
+  "properties": {
+    "supervisors": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["supervisor_id", "role", "full_name", "phone"],
+        "properties": {
+          "supervisor_id": {
+            "$ref": "common.json#/$defs/local_id",
+            "description": "Nazoratchining yuboruvchi tizimdagi o'zgarmas identifikatori (shu obyekt ro'yxatida noyob)."
+          },
+          "role": {
+            "type": "string",
+            "enum": ["customer_supervisor", "state_inspector"],
+            "description": "Buyurtmachi texnik nazoratchisi yoki davlat inspeksiyasi xodimi. Bir rolda bir nechta nazoratchi bo'lishi mumkin."
+          },
+          "full_name": {"type": "string", "minLength": 3, "maxLength": 200, "description": "F.I.Sh."},
+          "phone": {
+            "type": "string",
+            "pattern": "^\\+998[0-9]{9}$",
+            "description": "Markazga kirish uchun telefon raqami (SMS-kod shu raqamga yuboriladi). Ro'yxatda noyob."
+          },
+          "position": {"type": "string", "minLength": 1, "maxLength": 200, "description": "Lavozimi."},
+          "organization": {"type": "string", "minLength": 1, "maxLength": 300, "description": "Tashkiloti (masalan, buyurtmachi yoki inspeksiya nomi)."}
+        }
+      }
+    }
+  }
+}

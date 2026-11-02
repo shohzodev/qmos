@@ -33,7 +33,8 @@
         "site.daily_report",
         "site.photo",
         "site.incident",
-        "site.daily_report_retracted"
+        "site.daily_report_retracted",
+        "site.supervisors"
       ]
     },
     "occurred_at": {
@@ -219,6 +220,25 @@
         "properties": {
           "data": {
             "$ref": "daily-report-retracted.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event_type": {
+            "const": "site.supervisors"
+          }
+        },
+        "required": [
+          "event_type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "site-supervisors.json"
           }
         }
       }
